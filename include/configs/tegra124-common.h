@@ -23,7 +23,7 @@
 /*-----------------------------------------------------------------------
  * Physical Memory Map
  */
-#define CONFIG_SYS_TEXT_BASE	0x80110000
+#define CONFIG_SYS_TEXT_BASE	0x83D90000
 
 /*
  * Memory layout for where various images get loaded by boot scripts:
@@ -58,7 +58,7 @@
 	"ramdisk_addr_r=0x82100000\0"
 
 /* Defines for SPL */
-#define CONFIG_SPL_TEXT_BASE		0x80108000
+#define CONFIG_SPL_TEXT_BASE		0x83D88000
 #define CONFIG_SYS_SPL_MALLOC_START	0x80090000
 #define CONFIG_SPL_STACK		0x800ffffc
 
