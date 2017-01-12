@@ -6,6 +6,7 @@
 #
 
 extra-y        := hello_world
+extra-y        += show_mode
 extra-$(CONFIG_SMC91111)           += smc91111_eeprom
 extra-$(CONFIG_SMC911X)            += smc911x_eeprom
 extra-$(CONFIG_SPI_FLASH_ATMEL)    += atmel_df_pow2

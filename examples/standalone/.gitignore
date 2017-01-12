@@ -1,5 +1,6 @@
 /atmel_df_pow2
 /hello_world
+/show_mode
 /interrupt
 /mem_to_mem_idma2intr
 /sched
