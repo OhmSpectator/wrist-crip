@@ -5,6 +5,7 @@
 ifeq ($(CONFIG_SPL_BUILD)$(CONFIG_TEGRA),yy)
 CONFIG_CPU_V7=
 CONFIG_CPU_ARM720T=y
+CONFIG_ARMV7_LPAE=
 endif
 
 # This selects which instruction set is used.
@@ -16,7 +17,7 @@ arch-$(CONFIG_CPU_SA1100)	=-march=armv4
 arch-$(CONFIG_CPU_PXA)		=
 arch-$(CONFIG_CPU_ARM1136)	=-march=armv5
 arch-$(CONFIG_CPU_ARM1176)	=-march=armv5t
-arch-$(CONFIG_CPU_V7)		=$(call cc-option, -march=armv7-a, \
+arch-$(CONFIG_CPU_V7)		=$(call cc-option, -march=armv7ve, \
 				 $(call cc-option, -march=armv7, -march=armv5))
 arch-$(CONFIG_ARM64)		=-march=armv8-a
 

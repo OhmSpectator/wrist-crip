@@ -50,7 +50,7 @@ endif
 # We don't want gcc reordering functions if possible.  This ensures that an
 # application's entry point will be the first function in the application's
 # source file.
-ccflags-y += $(call cc-option,-fno-toplevel-reorder)
+ccflags-y += $(call cc-option,-fno-toplevel-reorder,-march=armv7ve)
 
 #########################################################################
 

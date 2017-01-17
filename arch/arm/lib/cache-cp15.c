@@ -14,6 +14,10 @@
 
 DECLARE_GLOBAL_DATA_PTR;
 
+#ifdef CONFIG_SPL_BUILD
+#undef CONFIG_ARMV7_LPAE
+#endif
+
 __weak void arm_init_before_mmu(void)
 {
 }

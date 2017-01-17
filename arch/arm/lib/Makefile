@@ -24,6 +24,10 @@ else
 obj-y	+= relocate.o
 endif
 
+ifeq ($(CONFIG_SPL_BUILD)$(CONFIG_TEGRA),yy)
+CONFIG_ARMV7_LPAE=
+endif
+
 obj-$(CONFIG_CPU_V7M) += cmd_boot.o
 obj-$(CONFIG_OF_LIBFDT) += bootm-fdt.o
 obj-$(CONFIG_CMD_BOOTI) += bootm.o
