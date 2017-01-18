@@ -106,7 +106,7 @@ int show_mode(int argc, char* const argv[]) {
         :
         : "r0"
     );
-    printf("SCR: 0x%" PRIx32 "\n", scr_val);
+    printf("SCR: 0x%08" PRIx32 "\n", scr_val);
     printf("Done!\n");
 
 #if CONFIG_SWITCH_VIA_SMC
@@ -131,7 +131,7 @@ int show_mode(int argc, char* const argv[]) {
         "orr r0, r1 \n"
         "mov r1, sp \n"
         "mov r2, lr \n"
-        "msr cpsr_c, r0 \n"
+        "msr cpsr, r0 \n"
         "mov sp, r1 \n"
         "mov lr, r2"
         :
@@ -150,6 +150,32 @@ int show_mode(int argc, char* const argv[]) {
         : "r0"
     );
     printf("CPSR: 0x%"  PRIx32 "\n", cpsr_val);
+    printf("Done!\n");
+
+    printf("Press any button to set SCR.NS to 1\n");
+    (void)getc();
+    uint32_t ns_bit = 0b1;
+    asm volatile(
+        "mrc p15, 0, r0, c1, c1, 0 \n"
+        "ldr r1, %0 \n"
+        "orr r0, r1 \n"
+        "mcr p15, 0, r0, c1, c1, 0"
+        :
+        : "m" (ns_bit)
+        : "r0"
+    );
+    printf("Done!\n");
+
+    printf("Press any button to read SCR\n");
+    (void) getc();
+    asm volatile(
+    "mrc p15, 0, r0, c1, c1, 0 \n"
+            "str r0, %0                  "
+    : "=m" (scr_val)
+    :
+    : "r0"
+    );
+    printf("SCR: 0x%08" PRIx32 "\n", scr_val);
     printf("Done!\n");
 
     printf("Press any button to read HVBAR\n");
