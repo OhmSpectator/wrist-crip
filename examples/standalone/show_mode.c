@@ -9,9 +9,13 @@
 #define MON_MODE 0b10110
 #define HYP_MODE 0b11010
 
+#define UART_BASE_ADDR      0x70006300
+#define UART_THR_REG_OFFSET 0x0
+#define UART_LSR_REG_OFFSET 0x14
+#define UART_LSR_THRE_BIT   0x20
 
-extern uint32_t* _monitor_vectors;
 
+static void local_puts(const char*);
 
 int show_mode(int argc, char* const argv[])
 {
@@ -119,7 +123,7 @@ int show_mode(int argc, char* const argv[])
     (void) getc();
     asm volatile(
         "mrc p15, 0, r0, c1, c1, 0 \n"
-        "str r0, %0                  "
+        "str r0, %0"
         : "=m" (scr_val)
         :
         : "r0"
@@ -139,6 +143,9 @@ int show_mode(int argc, char* const argv[])
     );
     printf("HVBAR: 0x%08" PRIx32 "\n", hvbar_val);
     printf("Done!\n");
+
+    local_puts("First test string\n");
+    local_puts("Second test string\n");
 
     printf("Press \'s\' to exit, any other button to continue\n");
     if(getc() == 's')
@@ -170,3 +177,28 @@ int show_mode(int argc, char* const argv[])
     return 0;
 }
 
+static inline void wait_thr_empty(void)
+{
+    volatile uint8_t* uart_lsr_reg_addr = (volatile uint8_t*)(UART_BASE_ADDR + UART_LSR_REG_OFFSET);
+    volatile uint8_t thr_empty = 0;
+    while(thr_empty != UART_LSR_THRE_BIT)
+        thr_empty = (*uart_lsr_reg_addr) & UART_LSR_THRE_BIT;
+}
+
+static void local_putc(char character)
+{
+    volatile uint8_t* uart_thr_reg_addr = (volatile uint8_t*)(UART_BASE_ADDR + UART_THR_REG_OFFSET);
+    wait_thr_empty();
+    (*uart_thr_reg_addr) = character;
+}
+
+static void local_puts(const char* string)
+{
+    const char* current_ptr = string;
+    while(*current_ptr) {
+        local_putc(*current_ptr);
+        if(*current_ptr == '\n')
+            local_putc('\r');
+        current_ptr++;
+    }
+}
