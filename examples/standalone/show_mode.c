@@ -12,15 +12,17 @@
 #define UART_BASE_ADDR      0x70006300
 #define UART_THR_REG_OFFSET 0x0
 #define UART_LSR_REG_OFFSET 0x14
-#define UART_LSR_THRE_BIT   0x20
+#define UART_LSR_THRE_BIT   (1<<5)
+#define UART_LSR_RDR_BIT    (1<<0)
 
 
 static void local_puts(const char*);
+static char local_getc(void);
 
 int show_mode(int argc, char* const argv[])
 {
-    printf("Press any button to read ID_PFR1\n");
-    (void) getc();
+    local_puts("Press any button to read ID_PFR1\n");
+    (void) local_getc();
     uint32_t id_pfr1_val;
     asm volatile(
         "mrc p15, 0, r0, c0, c1, 1 \n"
@@ -190,6 +192,23 @@ static void local_putc(char character)
     volatile uint8_t* uart_thr_reg_addr = (volatile uint8_t*)(UART_BASE_ADDR + UART_THR_REG_OFFSET);
     wait_thr_empty();
     (*uart_thr_reg_addr) = character;
+}
+
+static void wait_ready_for_read(void)
+{
+    volatile uint8_t* uart_lsr_reg_addr = (volatile uint8_t*)(UART_BASE_ADDR + UART_LSR_REG_OFFSET);
+    volatile uint8_t ready_for_read = 0;
+    while(ready_for_read != UART_LSR_RDR_BIT)
+        ready_for_read = (*uart_lsr_reg_addr) & UART_LSR_RDR_BIT;
+}
+
+static char local_getc(void)
+{
+    char character;
+    volatile uint8_t* uart_thr_reg_addr = (volatile uint8_t*)(UART_BASE_ADDR + UART_THR_REG_OFFSET);
+    wait_ready_for_read();
+    character = *uart_thr_reg_addr;
+    return character;
 }
 
 static void local_puts(const char* string)
